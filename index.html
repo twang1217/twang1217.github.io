@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<title>Tao Wang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ========== Colors (editable) ========== */
+  :root {
+    --space: #050A1C;                  /* space background (deep indigo) */
+    --ink: #E6F6FF;                    /* ticker text */
+    --accent: #7FE8FF;                 /* name color */
+    --sep: #FFB86B;                    /* separator dots */
+    --line: rgba(127, 232, 255, .45);  /* ticker border */
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--space);
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--space);
+    color: var(--ink);
+    font-family: "Chakra Petch", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  /* ========== Home page ========== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    place-items: center;
+    padding: 1.5rem;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .space {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: -1; pointer-events: none;
+  }
+
+  /* Vertical stack: avatar, button, ticker */
+  .center {
+    width: min(720px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 34px;
+    position: relative;
+    /* Shift the stack down so the avatar sits exactly at the screen (and globe) center */
+    transform: translateY(calc((34px + 42px + 34px + 64px) / 2));
+  }
+
+  /* Avatar: name your photo avatar.jpg and put it in the same folder as index.html */
+  .avatar {
+    position: relative;
+    width: 132px; height: 132px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: rgba(14, 34, 78, .8);
+    border: 1px solid var(--line);
+    box-shadow: 0 0 24px rgba(127, 232, 255, .35), inset 0 0 16px rgba(127, 232, 255, .15);
+    color: var(--accent);
+    font-size: 2.4rem; font-weight: 700; letter-spacing: .05em;
+    text-shadow: 0 0 12px rgba(127, 232, 255, .6);
+  }
+  .avatar img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  /* Slowly rotating dashed ring */
+  .avatar::before {
+    content: "";
+    position: absolute; inset: -11px;
+    border-radius: 50%;
+    border: 1px dashed rgba(127, 232, 255, .55);
+    animation: spin 30s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* The center bar: transparent ticker */
+  .ticker {
+    width: 100%;
+    height: 64px;
+    border: 1px solid var(--line);
+    border-radius: 32px;
+    background: transparent;
+    box-shadow: 0 0 18px rgba(127, 232, 255, .18), inset 0 0 18px rgba(127, 232, 255, .08);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    animation: slide var(--duration, 30s) linear infinite;
+  }
+  .ticker:hover .track { animation-play-state: paused; }
+  .group { display: flex; align-items: center; }
+  .item {
+    white-space: nowrap;
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: .04em;
+    padding: 0 1.4rem;
+    text-shadow: 0 0 6px rgba(0, 0, 0, .9), 0 0 14px rgba(0, 0, 0, .8);
+  }
+  .item.name {
+    font-weight: 700; color: var(--accent); font-size: 1.25rem;
+    text-shadow: 0 0 10px rgba(127, 232, 255, .55), 0 0 6px rgba(0, 0, 0, .9);
+  }
+  .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--sep); box-shadow: 0 0 8px var(--sep); flex: none;
+  }
+
+  /* Explore button: jumps to the second page */
+  .explore {
+    display: inline-flex; align-items: center; gap: .6em;
+    height: 42px; padding: 0 1.5em;
+    border: 1px solid rgba(127, 232, 255, .6);
+    border-radius: 21px;
+    background: rgba(8, 24, 56, .55);
+    color: var(--accent);
+    font: 500 .95rem/1 "Chakra Petch", sans-serif;
+    letter-spacing: .12em;
+    text-decoration: none;
+    box-shadow: 0 0 16px rgba(127, 232, 255, .25);
+    transition: background .2s, color .2s, box-shadow .2s;
+  }
+  .explore svg { width: 14px; height: 14px; transition: transform .2s; }
+  .explore:hover, .explore:focus-visible {
+    background: var(--accent); color: #041024;
+    box-shadow: 0 0 26px rgba(127, 232, 255, .6);
+  }
+  .explore:hover svg { transform: translateY(3px); }
+  .explore:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+  /* Visitor stats */
+  .stats {
+    position: absolute;
+    top: calc(100% + 20px);
+    left: 0; right: 0;
+    display: flex; justify-content: center; gap: 2.2em;
+    font-size: .85rem; font-weight: 300; letter-spacing: .1em;
+    color: rgba(235, 248, 255, .9);
+    text-shadow: 0 0 6px rgba(0, 0, 0, .9);
+  }
+  .stats b { font-weight: 700; color: var(--accent); margin: 0 .25em; }
+
+  /* Scroll left to right */
+  @keyframes slide {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
+  }
+
+  @media (max-width: 600px) {
+    .ticker { height: 54px; }
+    .avatar { width: 104px; height: 104px; font-size: 1.9rem; }
+    .center { gap: 28px; transform: translateY(calc((28px + 40px + 28px + 54px) / 2)); }
+    .explore { height: 40px; }
+    .item { font-size: .95rem; padding: 0 1rem; }
+    .item.name { font-size: 1.05rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .track { animation: none; }
+    .avatar::before { animation: none; }
+    .ticker { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+    .group + .group { display: none; }
+  }
+
+
+  /* ======================================================
+     Second page: academic profile
+     ====================================================== */
+  .academic {
+    --text: #D6E3EE;
+    --muted: #8EA2B6;
+    --rule: rgba(127, 232, 255, .16);
+    position: relative;
+    background:
+      radial-gradient(60rem 30rem at 85% 0%, rgba(90, 80, 220, .12), transparent 70%),
+      radial-gradient(50rem 30rem at 0% 60%, rgba(40, 160, 200, .08), transparent 70%),
+      var(--space);
+    color: var(--text);
+    font-family: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.65;
+    padding: clamp(4rem, 9vw, 7rem) 1.5rem clamp(4rem, 8vw, 6rem);
+  }
+  /* Thin glowing line at the top, bridging from the home page */
+  .academic::before {
+    content: ""; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(127, 232, 255, .55), transparent);
+  }
+  .wrap {
+    max-width: 1080px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    align-items: start;
+  }
+
+  /* Left column: profile card, sticky while scrolling */
+  .profile { position: sticky; top: calc(2rem + env(safe-area-inset-top, 0px)); }
+  .profile .mini {
+    width: 88px; height: 88px; border-radius: 50%;
+    border: 1px solid rgba(127, 232, 255, .5);
+    background: rgba(14, 34, 78, .8);
+    display: grid; place-items: center; overflow: hidden; position: relative;
+    font: 700 1.5rem "Chakra Petch", sans-serif; color: var(--accent);
+    margin-bottom: 1.4rem;
+  }
+  .profile .mini img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .profile h2 {
+    font: 700 1.7rem/1.15 "Chakra Petch", sans-serif;
+    color: #fff; margin: 0 0 .5rem; letter-spacing: .02em;
+  }
+  .profile .role { margin: 0; color: var(--accent); font-weight: 500; }
+  .profile .affil { margin: .2rem 0 1.6rem; color: var(--muted); }
+  .links { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--rule); }
+  .links li { border-bottom: 1px solid var(--rule); }
+  .links a {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .7rem 0; color: var(--text); text-decoration: none;
+  }
+  .links a:hover, .links a:focus-visible { color: var(--accent); }
+  .links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .links svg { width: 12px; height: 12px; opacity: .6; }
+
+  /* Right column: content */
+  .content section + section { margin-top: clamp(3rem, 6vw, 4.5rem); }
+  .content h3 {
+    font: 700 1.35rem/1.2 "Chakra Petch", sans-serif;
+    color: #fff; letter-spacing: .03em;
+    margin: 0 0 1.3rem;
+    display: flex; align-items: center; gap: .8rem;
+  }
+  .content h3::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+  .content p { margin: 0 0 1rem; max-width: 68ch; }
+  .content a { color: var(--accent); text-underline-offset: 3px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; margin: 0; list-style: none; }
+  .tags li {
+    padding: .35rem .9rem;
+    border: 1px solid rgba(127, 232, 255, .35);
+    border-radius: 999px;
+    color: var(--text); font-size: .92rem;
+    background: rgba(127, 232, 255, .05);
+  }
+
+
+  /* News feed ("broadcast") */
+  .news h3 .live {
+    width: 8px; height: 8px; border-radius: 50%; flex: none;
+    background: rgb(255, 110, 220);
+    box-shadow: 0 0 0 0 rgba(255, 110, 220, .6);
+    animation: live 2s ease-out infinite;
+  }
+  @keyframes live {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 110, 220, .6); }
+    100% { box-shadow: 0 0 0 10px rgba(255, 110, 220, 0); }
+  }
+  .news-box {
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: rgba(127, 232, 255, .03);
+    max-height: 17rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(127, 232, 255, .35) transparent;
+  }
+  .news-list { list-style: none; margin: 0; padding: .3rem 1.2rem; }
+  .news-list li {
+    display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 1rem;
+    padding: .8rem 0;
+  }
+  .news-list li + li { border-top: 1px solid var(--rule); }
+  .news-date { font-family: "Chakra Petch", sans-serif; color: var(--accent); font-size: .92rem; padding-top: .05rem; }
+  .news-list .news-text { margin: 0; }
+  .news-new {
+    display: inline-block; margin-left: .5em; vertical-align: .1em;
+    font: 700 .68rem/1 "Chakra Petch", sans-serif; letter-spacing: .1em;
+    color: #041024; background: rgb(255, 110, 220);
+    padding: .22rem .4rem; border-radius: 3px;
+  }
+  @media (max-width: 520px) {
+    .news-list li { grid-template-columns: minmax(0, 1fr); gap: .15rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .news h3 .live { animation: none; } }
+
+  /* Publications, grouped by year */
+  .year-group { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; }
+  .year-group + .year-group { margin-top: 1.8rem; }
+  .year {
+    font: 700 1.05rem "Chakra Petch", sans-serif; color: var(--muted);
+    padding-top: .15rem; position: sticky; top: 2rem; align-self: start;
+  }
+  .pubs { list-style: none; margin: 0; padding: 0; }
+  .pub { padding: 0 0 1.4rem; }
+  .pub + .pub { padding-top: 1.4rem; border-top: 1px solid var(--rule); }
+  .pub .pub-title { color: #fff; font-weight: 600; font-size: 1.05rem; line-height: 1.4; margin: 0 0 .3rem; }
+  .pub .pub-authors { color: var(--muted); margin: 0; font-size: .95rem; }
+  .pub-authors strong { color: var(--text); font-weight: 600; }
+  .pub .pub-venue { margin: .15rem 0 0; font-size: .95rem; font-style: italic; color: var(--text); }
+  .pub-venue .award {
+    font-style: normal; font-weight: 600; color: rgb(255, 110, 220); margin-left: .5em;
+  }
+  .pub-venue .impact {
+    display: inline-block; vertical-align: .1em;
+    font: 700 .75rem/1 "Chakra Petch", sans-serif; font-style: normal; letter-spacing: .06em;
+    color: #FFB86B; border: 1px solid rgba(255, 184, 107, .55); border-radius: 4px;
+    padding: .25rem .45rem; margin-left: .6em; white-space: nowrap;
+  }
+  .pub-links { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+  .pub-links a {
+    font: 500 .8rem/1 "Chakra Petch", sans-serif; letter-spacing: .08em;
+    padding: .35rem .7rem; border: 1px solid rgba(127, 232, 255, .4); border-radius: 4px;
+    text-decoration: none; color: var(--accent);
+  }
+  .pub-links a:hover, .pub-links a:focus-visible { background: var(--accent); color: #041024; }
+
+  /* Timeline (experience and education) */
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 1rem;
+    padding: .9rem 0; border-top: 1px solid var(--rule);
+  }
+  .timeline li:last-child { border-bottom: 1px solid var(--rule); }
+  .timeline .when { color: var(--muted); font-family: "Chakra Petch", sans-serif; }
+  .timeline .what { margin: 0; color: #fff; font-weight: 500; }
+  .timeline .where { margin: 0; color: var(--muted); font-size: .95rem; }
+
+  .content .scholar-note { margin-top: 1.4rem; color: var(--muted); }
+
+  .content .footer-note { margin-top: 4rem; color: var(--muted); font-size: .85rem; text-align: center; }
+
+  @media (max-width: 820px) {
+    .wrap { grid-template-columns: minmax(0, 1fr); }
+    .profile { position: static; }
+  }
+  @media (max-width: 520px) {
+    .year-group { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
+    .year { position: static; }
+    .timeline li { grid-template-columns: minmax(0, 1fr); gap: .2rem; }
+  }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <canvas class="space" id="space" aria-hidden="true"></canvas>
+
+  <h1 class="sr-only">Tao Wang</h1>
+  <div class="center">
+    <!-- Avatar: shows initials if avatar.jpg is missing -->
+    <div class="avatar">
+      <span aria-hidden="true">TW</span>
+      <img src="avatar.jpg" alt="Portrait of Tao Wang" onerror="this.remove()">
+    </div>
+
+    <a class="explore" href="#academic">
+      Explore
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2 5l5 5 5-5"/></svg>
+    </a>
+
+    <div class="ticker" id="ticker" aria-label="About me">
+      <div class="track" id="track"></div>
+    </div>
+
+    <!-- Visitor stats (Busuanzi, free, no sign-up; real numbers appear only once the site is online) -->
+    <div class="stats">
+      <span id="busuanzi_container_site_uv">Visitors<b id="busuanzi_value_site_uv">—</b></span>
+      <span id="busuanzi_container_site_pv">Views<b id="busuanzi_value_site_pv">—</b></span>
+    </div>
+  </div>
+</header>
+
+<main id="academic" class="academic">
+  <div class="wrap">
+
+    <!-- Left column: profile card -->
+    <aside class="profile">
+      <div class="mini">
+        <span aria-hidden="true">TW</span>
+        <img src="avatar.jpg" alt="" onerror="this.remove()">
+      </div>
+      <h2>Tao Wang</h2>
+      <p class="role">PhD Student, Computer Science</p>
+      <p class="affil">University of Idaho</p>
+      <ul class="links">
+        <li><a href="https://scholar.google.com/citations?user=RSi1MB8AAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5"/></svg></a></li>
+        <li><a href="https://github.com/twang1217" target="_blank" rel="noopener">GitHub <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5"/></svg></a></li>
+        <!-- To add an email or CV, uncomment the two lines below and fill them in:
+        <li><a href="mailto:you@example.com">Email <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5"/></svg></a></li>
+        <li><a href="cv.pdf">CV (PDF) <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5"/></svg></a></li>
+        -->
+      </ul>
+    </aside>
+
+    <!-- Right column: academic content -->
+    <div class="content">
+
+      <section id="about">
+        <h3>About</h3>
+        <p>I'm Tao Wang, and you can call me Tao. I am a PhD student in Computer Science at the University of Idaho, where I also earned my bachelor's degree in Computer Science in 2023.</p>
+        <p>My research applies machine learning, including large language models, to nuclear materials and nuclear power plant safety.</p>
+      </section>
+
+      <section id="news" class="news">
+        <h3><span class="live" aria-hidden="true"></span>News</h3>
+        <div class="news-box" tabindex="0" aria-label="News">
+          <ul class="news-list" id="news-list"></ul>
+        </div>
+      </section>
+
+      <section id="interests">
+        <h3>Research interests</h3>
+        <ul class="tags">
+          <li>Machine learning</li>
+          <li>Nuclear materials</li>
+          <li>Natural language processing</li>
+        </ul>
+      </section>
+
+      <section id="publications">
+        <h3>Publications</h3>
+        <div id="pub-list"></div>
+        <p class="scholar-note">Full and up-to-date list on <a href="https://scholar.google.com/citations?user=RSi1MB8AAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>.</p>
+      </section>
+
+      <section id="experience">
+        <h3>Experience</h3>
+        <ul class="timeline">
+          <li><span class="when">Jan 2024 – Aug 2026</span><div><p class="what">Research Assistant</p><!-- Organization: <p class="where">Organization name</p> --></div></li>
+        </ul>
+      </section>
+
+      <section id="education">
+        <h3>Education</h3>
+        <ul class="timeline">
+          <li><span class="when">Jan 2024 – present</span><div><p class="what">PhD in Computer Science</p><p class="where">University of Idaho</p></div></li>
+          <li><span class="when">Aug 2022 – May 2023</span><div><p class="what">BS in Computer Science</p><p class="where">University of Idaho</p></div></li>
+        </ul>
+      </section>
+
+      <p class="footer-note">© 2026 Tao Wang</p>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ==========================================================
+   Edit the ticker content here
+   name: true renders the item in bold accent color (good for your name)
+   ========================================================== */
+const ITEMS = [
+  { text: "I'm Tao Wang", name: true },
+  { text: "Call me Tao" },
+  { text: "PhD student in Computer Science at the University of Idaho" },
+  { text: "Research: Machine Learning and Nuclear Materials" },
+];
+
+const SPEED = 60;        // ticker speed (pixels per second)
+const GLOBE_SPIN = 0.08; // globe rotation speed
+
+/* Extra highlighted places on the globe
+   name: label shown   lat/lon: latitude/longitude (negative for south/west)
+   radius: size of the lit area around it (degrees) */
+const HIGHLIGHTS = [
+  { name: "Suzhou, Jiangsu", lat: 31.30, lon: 120.62,  radius: 1.8 },
+  { name: "Idaho, USA",      lat: 44.20, lon: -114.60, radius: 3.2 },
+];
+const HIGHLIGHT_COLOR = "255,110,220"; // highlight color (RGB), currently bright magenta
+
+/* Globe terrain colors (RGB), adjust as you like */
+const TERRAIN_COLORS = [
+  [120, 170, 255], // 0 deep ocean
+  [110, 200, 255], // 1 shallow coastal ocean
+  [120, 235, 165], // 2 temperate land
+  [ 60, 215, 120], // 3 tropical rainforest
+  [255, 196, 105], // 4 desert
+  [185, 165, 255], // 5 mountains
+  [150, 225, 215], // 6 boreal / tundra
+  [240, 250, 255], // 7 ice
+];
+
+/* Initial globe orientation: which longitude faces the viewer when the page opens
+   null = automatically use the midpoint of the highlighted places above
+   or give a longitude directly, e.g. 105 faces China */
+const START_LON = -100;  // central continental US
+
+
+/* ==========================================================
+   Second page: publications
+   title / authors / venue (journal or conference) / year
+   impact (optional) impact factor / award (optional) / links (optional) button label and URL
+   Author names matching MY_NAME are bolded automatically
+   ========================================================== */
+const MY_NAME = "Tao Wang";
+// Format example (copy this block to add a paper):
+// {
+//   title: "Paper title",
+//   authors: ["Tao Wang", "Coauthor Name"],
+//   venue: "Journal or Conference Name",
+//   year: 2025,
+//   impact: "IF 3.5",               // optional, impact factor
+//   award: "Best Paper",            // optional
+//   links: { PDF: "https://...", Code: "https://..." },  // optional
+// },
+const PUBLICATIONS = [
+  {
+    title: "Compilation of Creep Property Data for Nuclear Structural Materials",
+    authors: ["Isshu Lee", "John W. Merickel", "Boopathy Kombaiah", "Yalei Tang", "Tao Wang", "Fei Xu", "Rongjie Song", "Aleksandar Vakanski"],
+    venue: "Scientific Data, vol. 13, article 1262",
+    impact: "IF 7.2",
+    year: 2026,
+    links: {
+      Paper: "https://doi.org/10.1038/s41597-026-07563-y",
+      Dataset: "https://doi.org/10.24435/materialscloud:99-xr",
+      Code: "https://github.com/avakanski/Dataset-of-Creep-Properties-for-Nuclear-Structural-Materials",
+    },
+  },
+  {
+    title: "A Knowledge-Informed Large Language Model Framework for U.S. Nuclear Power Plant Shutdown Initiating Event Classification for Probabilistic Risk Assessment",
+    authors: ["Min Xian", "Tao Wang", "Sai Zhang", "Fei Xu", "Zhegang Ma"],
+    venue: "Proceedings of the Institution of Mechanical Engineers, Part O: Journal of Risk and Reliability, 239(6), 1257–1264",
+    impact: "IF 1.8",
+    year: 2025,
+    links: {
+      Paper: "https://doi.org/10.1177/1748006x251386900",
+      arXiv: "https://arxiv.org/abs/2410.00929",
+    },
+  },
+];
+
+(function renderPubs() {
+  const box = document.getElementById("pub-list");
+  if (!box) return;
+  if (!PUBLICATIONS.length) { box.remove(); return; }
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const years = [...new Set(PUBLICATIONS.map(p => p.year))].sort((a, b) => b - a);
+  box.innerHTML = years.map(y => {
+    const items = PUBLICATIONS.filter(p => p.year === y).map(p => {
+      const authors = p.authors.map(a => a === MY_NAME ? `<strong>${esc(a)}</strong>` : esc(a)).join(", ");
+      const links = p.links ? Object.entries(p.links).map(([k, v]) => `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(k)}</a>`).join("") : "";
+      return `<li class="pub">
+        <p class="pub-title">${esc(p.title)}</p>
+        <p class="pub-authors">${authors}</p>
+        <p class="pub-venue">${esc(p.venue)}${p.impact ? `<span class="impact">${esc(p.impact)}</span>` : ""}${p.award ? `<span class="award">${esc(p.award)}</span>` : ""}</p>
+        ${links ? `<div class="pub-links">${links}</div>` : ""}
+      </li>`;
+    }).join("");
+    return `<div class="year-group"><span class="year">${y}</span><ol class="pubs">${items}</ol></div>`;
+  }).join("");
+})();
+
+
+/* ==========================================================
+   Second page: news ("broadcast")
+   date: "YYYY-MM" or "YYYY-MM-DD"   text: the update (links allowed)
+   Items are sorted newest first automatically.
+   Items from the last NEW_DAYS days get a NEW badge.
+   ========================================================== */
+const NEWS = [
+  { date: "2026-09", text: "This website is live. Welcome!" },
+  { date: "2026-06", text: 'Our paper on creep property data for nuclear structural materials was published in <em>Scientific Data</em>.' },
+  { date: "2025-12", text: 'Our paper on an LLM framework for nuclear power plant initiating event classification appeared in the <em>Journal of Risk and Reliability</em>.' },
+  { date: "2024-01", text: "Started my PhD in Computer Science at the University of Idaho." },
+];
+const NEW_DAYS = 45;
+
+(function renderNews() {
+  const list = document.getElementById("news-list");
+  if (!list) return;
+  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const toDate = d => { const [y, m, day] = d.split("-").map(Number); return new Date(y, (m || 1) - 1, day || 1); };
+  const now = new Date();
+  list.innerHTML = [...NEWS]
+    .sort((a, b) => toDate(b.date) - toDate(a.date))
+    .map(n => {
+      const d = toDate(n.date);
+      const label = `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+      const isNew = (now - d) / 86400000 <= NEW_DAYS;
+      return `<li><span class="news-date">${label}</span><p class="news-text">${n.text}${isNew ? '<span class="news-new">NEW</span>' : ""}</p></li>`;
+    }).join("");
+})();
+
+/* ========== Ticker ========== */
+const track = document.getElementById("track");
+
+function buildGroup(hidden) {
+  const g = document.createElement("div");
+  g.className = "group";
+  if (hidden) g.setAttribute("aria-hidden", "true");
+  ITEMS.forEach(it => {
+    const s = document.createElement("span");
+    s.className = "item" + (it.name ? " name" : "");
+    s.textContent = it.text;
+    g.appendChild(s);
+    const d = document.createElement("span");
+    d.className = "dot";
+    g.appendChild(d);
+  });
+  return g;
+}
+
+function buildTicker() {
+  track.innerHTML = "";
+  const ticker = document.getElementById("ticker");
+  const first = buildGroup(false);
+  track.appendChild(first);
+  const one = first.offsetWidth;
+  const repeats = Math.max(1, Math.ceil(ticker.clientWidth / one));
+  for (let i = 1; i < repeats; i++) {
+    [...buildGroup(true).childNodes].forEach(n => first.appendChild(n));
+  }
+  const copy = first.cloneNode(true);
+  copy.setAttribute("aria-hidden", "true");
+  track.appendChild(copy);
+  track.style.setProperty("--duration", (first.offsetWidth / SPEED) + "s");
+}
+
+/* ========== Sci-fi background: holographic globe, orbits, starfield ========== */
+const canvas = document.getElementById("space");
+const ctx = canvas.getContext("2d");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let W, H, R, CX, CY, stars = [];
+const TILT = 0.38;
+
+let seed = 11;
+const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// Real-world terrain classes (Natural Earth data, 1°×1° grid, run-length encoded)
+// 0 deep ocean  1 shallow ocean  2 temperate  3 tropical  4 desert  5 mountains  6 boreal/tundra  7 ice
+const TERRAIN = (function () {
+  const grid = new Uint8Array(360 * 180);
+  const rle = "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1nB8F1H4F1C2F1H3F1CiGcC6GnC1B4A13B2C2B2C1qF3CmFfC2F6C7F7C2F7CcF2C3B2A7B3C3B4A1qB6C2F1H3F9ChG11B2C2B6A12B6CoF2C1pFgCeF5C3F9CaF3B1C2B3A7B7A1wB2C4FcCiGsF3C3B2C6B3A12B6C1B3CjF7C1nF9C4F1CeF4C4FcC6F4B1C2B3A7B7A1wB5C1FcCiGpF6B4C8B2A16B3CgFgC1gFeC2F6CiF5C2F5C6F4C2B1C1B2A2aB6FfCfGoF6C1B3C9B2A16B3CcFaC2F2C1F5CoB1C8E3CgF7C2F5C2F8CaE5F5C5F3C4F4C1B2C1B4A2dB3F5C2F9CeGnF6C4B1C1B4C3B3A17B5C8F1H2F7C5F7ClB5C6E6C1E6C7F1C1F4C3FfC7E7F6C4F3C4F4B2C3B4A2dB3F3C4FaCcGcC5G4F6C9B9A12BaC7F2H1FaC3F7C2B2C5F4C6B7C5EeC5F6C6FeEeF5CaF4B4C2B5A2dB3F3C4FbCgG3CaG3F5C6BcA13BaC7F8C1FaC6B3C3B1F6C3B6C6EgC2F7H2F2C3F5EnF4CbF3B5C3B1C1B2A2dB2F4C4FbCqFaC1B2C2B8A19B2C2F8C5F3B1C1F4B2FcC1BaF3H2F3B5C6EgC2F1H1F5H3F2H1F6EnF2CcF3C1B4C6B2A2dB2F4C7F9CoFaC1B9A1dB3C1FbB5C4F3B2FbB5C3B5F2H1F3B7C3EdC3F4H4FaC2F1EoCaF3B1F2B5C6B3A2dB2F4C7E1F9CnF9C3B6A1fB2CcF2B4C2B2F4C1B2F1CeF3B2F9B7EeC4F3H5F7C6EjF2CbF4B9C3B1C1B4A2dB2F5C5E2C1F8CnF7C3B4A1jB3CaB7C2B4F3CiF7C1F6B2A1B3EdC4F5H1F2E8C6EiF3CbF4B6A1B2C3B5A2eB3F5C5E1C1F8CjF1C1F7C2B7A1jB2CaB8C2B5F2C7B2CjF3C1B2A1B2C2EcC2H4F4EaC1F9EeF3C5B1C6F1B4A2B6C2B4A2fB3F6C5F3C1F5ChFaC3B5A1lB2C3F5C3B7C1B3C6B2C5B1CmB6C2EbC3H4F1H1F2EaFcEbF4C4B2C1B2C5B3A2B5C2B3A2iB3F5C4F3C2F5CfFbC3B3A1oB3C1F7C1B6F2B1F2C6B4C4B2ClF1B5C5E7C4H6F1C1F1E6F7C3F8E1C1E6F4C8B1C6B6C1B1C3B3A2iB4F4CaF4CfFaC4B3A1oB3C4F3B2FbC1B2C2B5C3B3ClF2B4F2C4E5C2F4H7F1H1F7H1F2H2F4C1F6C8F4C8B3C4B6C5B2A2kB4F4C9F4CfF9C5B2A1qB4C1FgC1BcC4B5CeF2C3F3CcF6H1F1H9F7H2F8CbF4C5B6C4B2C9B2A2lB3F3C1E5C5E1C1E1CfF7C6B3A1pB5FcE4F1C1BdC1B7C7E2C5F6CeF9H5C9H1CfF9C7B5C3B1C9B4A2mB4C2E8C1E5CeF6C5B5A1pB3C1FaE8C2BnC1E8C2F7C3E2CeF3H5C9H3CdF9C7B8C7B7A2mB5C1EeCeF3C6B6A1qB2FaEcC4B4E4BaC2E8C3F6C3E3CdF2C1F2H1F2CsF8C6B7C5B7A2qB4C1EfCkB5A1rB3F6EhC4B2EaC4B1C2E8C5F5C2E4ChH3F2CbH1CiF6C4B3A2B3C2B6A2uB3C1EgCjB3A1rB5F4ElC3EfC5E5C6F3C1F3C1E3CdE3C2H5C7H1C2H2CjF3C5B3A2B9A2xB3C1E1C1E3F2E8CbB3C1B1C4B5A1nB5F3E15ChF7C1E2CbE5C3F1H4FcH2C8F3CeB2A3B6A2zB4C2E3F3E5F1C6BcC3B6A1lB4E1bC1F3CbB1C1F6CdE6C4F3H6F1H1F1H1F3C7F6C8F2C3B3A39B2C4E3F2E7C3BeC3B2C1B3A1lB3C1E1bC1F3CcB1C1F5CbE7C6F5H3F1H1F1H1F3C7F6C7F3C2B4A39B4C3B1C1F3E6C3B4A8B2C3B1C3B2A1kB3E1eB1F3CdB1C1F2CcE5CdFaC8F3C8F4C1B4A3aB5C4F3E6F1C2B2AaB3C2B1C2B3A1jB4E1eB1F4CcB3CdE4CiF6CdF9C2B1C1B2A22B5A15B3C3B2F3E2C1F3C2B2A8B8C2B3A1jB3E1fB2F3C9E2C6BaC1E4C6F2CdF2CeF6C4B1C2B2A22B8A13B4C2B2F4C2F3C1B2A3B9C3B2C1B4A1hB3C1E1gB2F3C7E4C1E3C3B8C9F4CcF3CeF5C4B2C2B2A22B2C1B6A12B4C2B2C1F4C1F3C1B2A2B8C8B5A1gB3E1iB2F2C7E9C3B2A3B4C4F8CbF2CmB4C2B2A22B2C4B4A13B7F4C2F2C1B3A1B3C4B1C1B3C6B8A1bB2E1kB1C1F3C4EaC3B2A3B5C3F7CbB1F3C8F3C6B8C1B3A22B5C2B3A13B7F9B6C5B7C5BbA17B2E1jB2C1F3C3EaC3B3A5B3C3F1C8F4C2B4C1F2C7F5B2C2BeA21B5C3B2A18B2FaB5C4B9C9B6A17B3E1jB2C1F3EcC2B4A6B4F2C7F4C1B7F2C7F4B2C4B2A4B7A24B3C1B3A18B4F8C9B3A3B2C3B1CaB2A17B3E1jB3F3EbC3B3A7B5F2C6F3BaF1C7F4C1B1C3B3A3B3C3B2A24B7A18B5FcC3BaC2B4C1B3C3B2A18B2E1jF1B2C2F1E8C5B3AaB3F2C4F5B4A3B3F2C8F3B7A3B3C3B2A25B5A1bB6FaC2B1C1BnA17B3E1kB3C1F1C1E4F3C3B5AbB2F2C3F3C2B3A6B2CbF3C1B4A4B2C4B2A3mB7F2B2F3C8B2A1BhA17B3E1kF1B2C4F6C1B6AcB2F3C2F2C1B5A6B2C2B1C3F2C3F4B3A5B2C3B4A3oB9C1F1C8B2A7B7A1bB2C3E4C6E17F3C5F4B7AeB3F2C2F2C1B4A7B5C3F9B3A5B3C3B5A3oB8D9B2A4BbA1aB3DgE2D3E1D4ErF1E2F2D5F2D1B6AgB3F2D2F2D1B2A9B6D4F1D3F4B2A5B3D4B4A3tB7D5B2A3B6D1B1D1BbA12B3DsEpF5D5B4D2B2AiB2D1F5B3AcB3D8F4B2A4B4D2B2D2B2A3uB7D4B8F3D1F3BaA13B2DuElF7D3B3D5B2AiB3F5B3AdB2D2B3D3F4B2A3B4D1B1D5B3A3xB4D3B7D1FeD1B3A12B4DtE2D1EhF7DbB2AiB4F3D1B4AcB2D2B3D4F1B4A3B3D2B1D5B3A3yB3D8B1D3FbD3B4A11B4DtE1D4E2D4E9FaD7B3AjB3F3D2B3AcB2D2B4D3B5A3B2D2B3D2B1D2B2A3zB4D7F7DbB6A10B3D1cFaD7B3AkB2F2D4B2AcB2D3B4D1B4A4B3D1B4D5B2A3zB6D2B1D2F6D3F5D2F1D2B8AxB4D1bF8D8B3AlB3D1B1D3B2A9B5D3B8A4B8D6B2A41B8D1F6D3FaD1B1D1B6AxB4D1aF8D8B3AlB5D3B2A9B6D4B5A4B4D2B4D5B2A43B6D1F5D4FaD6B3AyB5DcB3DuF6D8B3AnB5D1B3A9B2D3B2D3B3A4B5D5B5D1B3A46B3F5D5FaD7B2AzB4D5B1D3B6DwF2D9B4ApB7A9B2D4B1D4B2A1B7D5BbA45B3F5D6F8D8B4AzBkD13B4ArB5AaB3D8B8D6BdA42B4D1F5D8F1DdB4AzBdA2B6DlF2DfB3A17B4D7B5D1B1D8B8D1B3A42B4F5DpB5A1eB3D1F1DiF2DeB4A19B4D7B4D9B2D2B3D1B1D2B7A3xB2D1F4DqB8A1cB3D1F2DhF2DdB5A1aB4D5B4DhB2D2BcA3sB2F4DvB9A17B2D2F3DfF2DdB4A1dB4D4B5D9B1D5B3D2B1D4BaA4B6A3fB2F4DxB8A16B2D2F3DfF2DcB4A1fB3D5B4D8B2D5B6D5B2D2B8A1B8A3cB3F4DwE5D1B4A15B3D1F4DeF1DcB4A1hB2D6B4D7B1D4B6D2B1D4B1F1D5B8D2B4A3cB3F4DwE7B5A13B5F3DeF2DbB3A1iB4D5B4D6B2D4B2D6B1D3F6D4B6D3B4A3aB2D1F4DwE8B5A13B4D1F2DeF2DaB3A1jB4D4B8D1B1D1B2D5B8D2B1FaD1B5D3B5A39B3F5DxE8B3A15B2D1F2DfF1D9B4A1lB3D5BbD2B1D2BaD1B2D4F5B2D4B2D2B5A37B2D1F6DwE9B2A15B3D1F1DqB2A1mB5D8BlD1B3D4F5D4B4D2B6A35B4F5DwE8D1B2A15B3D1F2DpB2A1nB5D9BfA2B6D6F4B8D3B5A34B4F2H1F3DuE9B3A16B2D2F2DoB3A1oB7D6B1D6B1D4B2A2B5D7B2F2D1BaD2B4A35B3F1H1F3DsE6D1E3D1B3A16B2D2F1DpB3A1pBcD5B2D3BfD2B4F3D1B2A1B5D3B3A35B3D1F5DrE3D7B3A17B3DjF1D8B2A3B6A1kBcD1B2D2BhD1B4D4B2A4B4D2B2A36B3F7DrE1D6B4A17B3DiF2D8B2A2B8A1pBhD6B4D3B9A4B8A36B3F8DxB3A18B3E1DgF2D9B2A2B3D2B3A1tBcD7B4D1F2B9A6BbA32B3F5H2F3DtB3A18B3E2DgF2D9B6D4B2A1xB4D2B1D8B4D1F2B4AgB6AaB3A2pB3F6H1F3CtB3A18B3E1CfF3CaB6C4B2A1wB4CbB5C1F3C1B2AgB2C2B2A6B7A2qB3C1F9CsB2A19B2E4CdF3CaB4C6B2A1vB4CeB3C2F2C1B3AfB2C2B2A5B5C1B2A2qB5F9CqB3A19B2E6CaF2CcB3C7B2A1uB4CgB2C2F3B3AfB3C1B2A5B3C2B3A2rB6F2E1F6CoB3A19B2E6C9F2CbB4C7B3A1sB5ClF3C1B4AdB6A5B2C2B4A2tB5E2F6CoB2A1aB2E7CjB7C6B3A1pB7C1E6CfF4B4AbB8A5B2C2B1A2yB3E3F5CoB2A1aB3E2C1E3CiB8C6B2A1oB7C2E8CeF5C1B3AaB7A6B5A2zB2E3F5CnB3A1aB4E5ChB4A2B2C6B3A1nB5C5E8CeF6B4A9B2C2B4A5B5A2zB2E3F5ChF5C1B3A1bB3EbCcB2A3B2C5B4A1nB3C7E8CfF6B3A9B2C3B3A39B2E4F4CgF5C1B3A1dB3EbC4F3C4B2A3B2C5B3A1oB2C8E7ChF5C1B4A7B4C2B2A39B2E4F4C9F4C2F4B6A1dB3EcC3F2C5B2A3B2C5B2A1pB2CaE4CiF6B4A7B8A39B2E3F4CaF7C1B7A1fB2E2C1E9C3F2C5B2A3B2C5B2A1pB2C9E6CiF6C1B3A8B6A39B2E3F4CaF6B6A1iB2E3C1E8C4F2C2B4A3B3C3B3A1pB2CaE4CkF6B3A3mB3E2F4CbF6B4A1kB2E4C1E7C4F2C1B5A3B9A1pB2CbE7ChF5C1B2A3mB3E2F4CbF6B2A1mB3C3E8C3F4B3A6B7A1qB3C9EaCiF3B2A3mB2C1F1E1F4CbF6B2A1mB4C4E6C1F5C1B2A24B3C9EaCiF3B2A3mB2F6CbF5C1B3A1nB4C5E4C1F5B3A25B3C8EaChF4B2A3mB2F2H1F2ChB4A1oB3C8E1F5B4A25B2CzF4C1B2A3mB2F1H2F2CgB4A1qB3C5F7C1B3A26B3CxF5B3A3mB2F5CfB4A1rB2C6F6B4A27B3CdB4ChF4B3AeB6A31B3F3ChB3A1sB3C7F3B5A28B2CaB9CfF3B3AfB7A30B3F3CgB3A1tB3C4B9A2aB2C5B2C1BcCdF3C1B3AfB2C2B4A2yB3C1F3CcB7A1uBeA2bB3C3B8A5B4CbF4B3AgB3C2B5A2wB3C1F4CcB5A1vB8A2hBcA8B6C5F6C1B3AgB3C3B4A2wB2C2F3CcB3A4oB7AdB5C4F7B3AiB3C5B1A2wB2C2F3CcB3A5bB3C6F2B5AhB4C5B1A2vB3C2F3C7B7A5cB9C1B5AhB4C5B2A2vB3C1F1H1F1C8B7A5dB6C2B1C2B2AiB3C2B1C2B3A2vB2C2F1H1F1C5B1C2B2A5mB2C5B2AfB5C1F2C3B3A2vB2C2H2C8B3A5mB3C4B2AfB5F2C1B5A2wB2C1F3C6B5A5mB4C2B3AdB4F1H2F1C2B5A2vB3C1F4C5B4A5oB8AdB4H1F2C1B4A2yB3C1F4C5B2A5rB6AeB2F2C3B5A2yB2C1H2F2C4B4A3lB6A2kB2F2C2B4A30B2C1F1H1F2C6B2A3lB7A2jB9A31B2C1H2F1C7B2A3lB2C2B3A2jB8A32B2C1F1H1F1C5BcA3dB2H2C1B2A5tB2C1F1H1F1C4BdA3dB7A5tB2C1F1H1F1C4B3A1B2C5B2A3dB7A5tB3C1F4C2B7C2B4A9dB4F1H1F3C2BcA9eB4F1H4F3B8A9hB4C3F3C1B2A9oBcA9pBbA141B7A9pBbA9nB8H3B2A2yB8A15B7A4B5AhB5A48B6H6B3A2vBcApB6A7B1eA3yB4H4B7A2qBaH4BeA7BoH3B8H1BlH1BdA3uB5H6B6A2fB6A1BcH8BeA4BbH2BbHiB3HpBcA3kB6H4B4A1tB5A1BbA6BhHhB1H6BbH1vBfA3gB3H1B2H5B4A1eB5A5BwH2B5HuB8H26BfA2cBbAgB6HaB3A19BlH1B5H1B3H3BaH14B3H2fBeA28BcA2B5A9B6HbB2A16BaH1B9H1vB3H2oB5A1kBjA5B3H5B1H1BkHfB3A13B7H29B2H2tB2A19B11H8B6H1BeHeB3A13B4H57B2A11BlH4B1H5B4H1B9H18B2AyB7H57B4ApB6A4BcHvB3H18B3ArBeH55B6ApBeH2bB6A9B5A8BeH57B7AmB7H2B8H29B9A7BbA3B9H5dB6AoB7H2eBfA4B7H1B5A3B4H5jB4ApB2H4B1H2dBoH7B2A3B2H5nB2ApB3H4B3H28BeH2B8H9B7H5kB5ApBiH25B4H8B4HcB8H5gB8AjB5A2B8H2mB2H1B9H7B1H5pBaA8BiA3B5H8wBoH1BfH90BaHgBdH1n7";
+  let i = 0;
+  rle.replace(/([A-H])([0-9a-z]+)/g, (_, c, n) => {
+    grid.fill(c.charCodeAt(0) - 65, i, i + parseInt(n, 36));
+    i += parseInt(n, 36);
+  });
+  return grid;
+})();
+function terrainAt(lat, lon) {
+  let lonDeg = lon * 180 / Math.PI;
+  lonDeg = ((lonDeg + 180) % 360 + 360) % 360;
+  const col = Math.min(359, Math.floor(lonDeg));
+  const row = Math.min(179, Math.floor(90 - lat * 180 / Math.PI));
+  return TERRAIN[row * 360 + col];
+}
+function isLand(lat, lon) { return terrainAt(lat, lon) >= 2; }
+
+// Angular distance between two points on the sphere (degrees)
+function angDist(lat, lon, h) {
+  const la = h.lat * Math.PI / 180, lo = h.lon * Math.PI / 180;
+  const c = Math.sin(lat) * Math.sin(la) + Math.cos(lat) * Math.cos(la) * Math.cos(lon - lo);
+  return Math.acos(Math.min(1, Math.max(-1, c))) * 180 / Math.PI;
+}
+
+// Evenly distributed points on the sphere
+const globePts = [];
+(function () {
+  const N = 9000, golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) {
+    const y = 1 - (i / (N - 1)) * 2;
+    const lat = Math.asin(y);
+    const lon = (i * golden) % (Math.PI * 2);
+    const kind = terrainAt(lat, lon);
+    const land = kind >= 2;
+    const hot = land && HIGHLIGHTS.some(h => angDist(lat, lon, h) < h.radius);
+    if (land || (kind === 1 && i % 3 === 0) || i % 9 === 0) globePts.push({ lat, lon, land, hot, kind });
+  }
+})();
+
+function project(lat, lon, spin) {
+  const x = Math.cos(lat) * Math.sin(lon + spin);
+  const y = Math.sin(lat);
+  const z = Math.cos(lat) * Math.cos(lon + spin);
+  const y2 = y * Math.cos(TILT) - z * Math.sin(TILT);
+  const z2 = y * Math.sin(TILT) + z * Math.cos(TILT);
+  return { x: CX + x * R, y: CY - y2 * R, z: z2 };
+}
+
+// Orbit: a circle with a given inclination
+function orbitPoint(a, radius, incl, node) {
+  let x = Math.cos(a) * radius, y = 0, z = Math.sin(a) * radius;
+  const y1 = y * Math.cos(incl) - z * Math.sin(incl);
+  const z1 = y * Math.sin(incl) + z * Math.cos(incl);
+  const x2 = x * Math.cos(node) - y1 * Math.sin(node);
+  const y2 = x * Math.sin(node) + y1 * Math.cos(node);
+  return { x: CX + x2 * R, y: CY - y2 * R, z: z1 };
+}
+const ORBITS = [
+  { radius: 1.32, incl: 1.25, node: 0.35, speed: 0.35, color: "127,232,255" },
+  { radius: 1.55, incl: 1.38, node: -0.55, speed: -0.22, color: "255,184,107" },
+];
+
+function resize() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = canvas.clientWidth; H = canvas.clientHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  R = Math.min(W, H) * 0.33;
+  buildNebula(dpr);
+  CX = W / 2; CY = H / 2;
+  seed = 3;
+  stars = Array.from({ length: Math.round(W * H / 1900) }, () => ({
+    x: rand() * W, y: rand() * H,
+    r: rand() < 0.95 ? rand() * 0.8 + 0.2 : rand() * 1.2 + 0.8,
+    a: rand() * 0.5 + 0.3, p: rand() * 6.28, v: rand() * 6 + 2,
+  }));
+}
+
+function drawOrbit(o, t, front) {
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 120; i++) {
+    const a1 = i / 120 * Math.PI * 2, a2 = (i + 1) / 120 * Math.PI * 2;
+    const p1 = orbitPoint(a1, o.radius, o.incl, o.node);
+    const p2 = orbitPoint(a2, o.radius, o.incl, o.node);
+    const isFront = p1.z > 0;
+    if (isFront !== front) continue;
+    ctx.strokeStyle = `rgba(${o.color},${front ? 0.45 : 0.15})`;
+    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+  }
+  const s = orbitPoint(t * o.speed, o.radius, o.incl, o.node);
+  if ((s.z > 0) === front) {
+    const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 10);
+    g.addColorStop(0, `rgba(${o.color},1)`);
+    g.addColorStop(1, `rgba(${o.color},0)`);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(s.x, s.y, 10, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+// Distant nebula: pre-rendered to an offscreen canvas on resize for performance
+let nebula = null;
+function buildNebula(dpr) {
+  nebula = document.createElement("canvas");
+  nebula.width = W * dpr; nebula.height = H * dpr;
+  const n = nebula.getContext("2d");
+  n.setTransform(dpr, 0, 0, dpr, 0, 0);
+  seed = 29;
+  const colors = ["110,80,255", "200,70,220", "60,130,255", "40,200,210"];
+  // Nebula clouds sit near the edges, away from the globe
+  const anchors = [[0.12, 0.2], [0.88, 0.78], [0.82, 0.15], [0.18, 0.85]];
+  anchors.forEach(([ax, ay], k) => {
+    const blobs = 7;
+    for (let i = 0; i < blobs; i++) {
+      const x = (ax + (rand() - 0.5) * 0.28) * W;
+      const y = (ay + (rand() - 0.5) * 0.28) * H;
+      const r = Math.min(W, H) * (0.16 + rand() * 0.26);
+      const col = colors[(k + i) % colors.length];
+      const a = 0.07 + rand() * 0.08;
+      const g = n.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(${col},${a})`);
+      g.addColorStop(0.5, `rgba(${col},${a * 0.45})`);
+      g.addColorStop(1, `rgba(${col},0)`);
+      n.fillStyle = g;
+      n.beginPath(); n.arc(x, y, r, 0, Math.PI * 2); n.fill();
+    }
+  });
+  // A few brighter star clusters inside the nebula
+  for (let i = 0; i < 160; i++) {
+    const [ax, ay] = anchors[i % anchors.length];
+    const x = (ax + (rand() - 0.5) * 0.3) * W, y = (ay + (rand() - 0.5) * 0.3) * H;
+    n.fillStyle = `rgba(220,210,255,${0.2 + rand() * 0.4})`;
+    n.beginPath(); n.arc(x, y, rand() * 0.9 + 0.2, 0, Math.PI * 2); n.fill();
+  }
+}
+
+// Occasional shooting stars
+let meteor = null;
+let nextMeteor = 4; // first meteor about 4 seconds after load
+function drawMeteor(t) {
+  if (!meteor && t > nextMeteor) {
+    const fromLeft = Math.random() < 0.5;
+    const angle = (fromLeft ? 0.35 : Math.PI - 0.35) + (Math.random() - 0.5) * 0.3;
+    meteor = {
+      x: fromLeft ? Math.random() * W * 0.5 : W * 0.5 + Math.random() * W * 0.5,
+      y: Math.random() * H * 0.35,
+      dx: Math.cos(angle), dy: Math.sin(angle),
+      speed: 700 + Math.random() * 500,
+      len: 120 + Math.random() * 140,
+      start: t, life: 0.9 + Math.random() * 0.6,
+    };
+  }
+  if (!meteor) return;
+  const age = t - meteor.start;
+  if (age > meteor.life) {
+    meteor = null;
+    nextMeteor = t + 8 + Math.random() * 10; // one every 8 to 18 seconds
+    return;
+  }
+  const fade = Math.sin(Math.PI * age / meteor.life);
+  const hx = meteor.x + meteor.dx * meteor.speed * age;
+  const hy = meteor.y + meteor.dy * meteor.speed * age;
+  const tx = hx - meteor.dx * meteor.len, ty = hy - meteor.dy * meteor.len;
+  const g = ctx.createLinearGradient(hx, hy, tx, ty);
+  g.addColorStop(0, `rgba(255,255,255,${0.95 * fade})`);
+  g.addColorStop(0.3, `rgba(160,220,255,${0.45 * fade})`);
+  g.addColorStop(1, "rgba(160,220,255,0)");
+  ctx.strokeStyle = g;
+  ctx.lineWidth = 1.6;
+  ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(tx, ty); ctx.stroke();
+  const glow = ctx.createRadialGradient(hx, hy, 0, hx, hy, 6);
+  glow.addColorStop(0, `rgba(255,255,255,${fade})`);
+  glow.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(hx, hy, 6, 0, Math.PI * 2); ctx.fill();
+}
+
+// Highlighted places: pulsing ring and label
+function drawHighlights(t, spin) {
+  HIGHLIGHTS.forEach((h, i) => {
+    const q = project(h.lat * Math.PI / 180, h.lon * Math.PI / 180, spin);
+    if (q.z <= 0.05) return;
+    const vis = Math.min(1, q.z * 2);
+    const c = HIGHLIGHT_COLOR;
+
+    // glow
+    const g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, 16);
+    g.addColorStop(0, `rgba(${c},${0.9 * vis})`);
+    g.addColorStop(1, `rgba(${c},0)`);
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(q.x, q.y, 16, 0, Math.PI * 2); ctx.fill();
+
+    // expanding pulse ring
+    const phase = ((t * 0.6 + i * 0.5) % 1);
+    ctx.strokeStyle = `rgba(${c},${(1 - phase) * 0.8 * vis})`;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(q.x, q.y, 4 + phase * 22, 0, Math.PI * 2); ctx.stroke();
+
+    // bright center dot
+    ctx.fillStyle = `rgba(255,255,255,${vis})`;
+    ctx.beginPath(); ctx.arc(q.x, q.y, 2.4, 0, Math.PI * 2); ctx.fill();
+
+    // label
+    ctx.font = "700 13px 'Chakra Petch', sans-serif";
+    ctx.shadowColor = "rgba(0,0,0,0.8)"; ctx.shadowBlur = 4;
+    ctx.fillStyle = `rgba(${c},${vis})`;
+    ctx.strokeStyle = `rgba(${c},${0.6 * vis})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(q.x + 5, q.y - 5); ctx.lineTo(q.x + 18, q.y - 18); ctx.lineTo(q.x + 26, q.y - 18); ctx.stroke();
+    ctx.fillText(h.name, q.x + 30, q.y - 14);
+    ctx.shadowBlur = 0;
+  });
+}
+
+// Initial rotation so the start longitude faces the viewer
+const START_SPIN = (function () {
+  let lonDeg = START_LON;
+  if (lonDeg === null) {
+    let sx = 0, sy = 0;
+    HIGHLIGHTS.forEach(h => {
+      sx += Math.cos(h.lon * Math.PI / 180);
+      sy += Math.sin(h.lon * Math.PI / 180);
+    });
+    lonDeg = HIGHLIGHTS.length ? Math.atan2(sy, sx) * 180 / Math.PI : 0;
+  }
+  return -lonDeg * Math.PI / 180;
+})();
+
+let t0 = null;
+function frame(ms) {
+  if (t0 === null) t0 = ms;          // start timing when the page opens
+  const t = (ms - t0) / 1000;
+  const spin = START_SPIN + t * GLOBE_SPIN;
+  const sky = ctx.createRadialGradient(CX, CY, 0, CX, CY, Math.max(W, H) * 0.75);
+  sky.addColorStop(0, "#0F1B46");
+  sky.addColorStop(0.55, "#080F2C");
+  sky.addColorStop(1, "#040818");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+  if (nebula) ctx.drawImage(nebula, 0, 0, W, H);
+
+  // Starfield: slow twinkle, drifting right
+  for (const s of stars) {
+    const x = (s.x + t * s.v) % W;
+    const a = s.a + 0.25 * Math.sin(t * 0.8 + s.p);
+    ctx.fillStyle = `rgba(210,235,255,${Math.max(0, a)})`;
+    ctx.beginPath(); ctx.arc(x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+  }
+
+  if (!reduceMotion) drawMeteor(t);
+
+  // Atmosphere glow
+  const halo = ctx.createRadialGradient(CX, CY, R * 0.9, CX, CY, R * 1.5);
+  halo.addColorStop(0, "rgba(80,190,255,0.36)");
+  halo.addColorStop(0.3, "rgba(90,130,255,0.11)");
+  halo.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = halo;
+  ctx.beginPath(); ctx.arc(CX, CY, R * 1.5, 0, Math.PI * 2); ctx.fill();
+
+  // Globe body
+  const body = ctx.createRadialGradient(CX - R * 0.3, CY - R * 0.4, R * 0.1, CX, CY, R);
+  body.addColorStop(0, "#133C70");
+  body.addColorStop(1, "#071631");
+  ctx.fillStyle = body;
+  ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI * 2); ctx.fill();
+
+  ORBITS.forEach(o => drawOrbit(o, t, false));
+
+  // Latitude and longitude lines
+  ctx.lineWidth = 0.6;
+  for (let k = 0; k < 12; k++) {
+    const lon = k / 12 * Math.PI * 2;
+    for (let i = 0; i < 40; i++) {
+      const p1 = project(-Math.PI / 2 + i / 40 * Math.PI, lon, spin);
+      const p2 = project(-Math.PI / 2 + (i + 1) / 40 * Math.PI, lon, spin);
+      if (p1.z <= 0) continue;
+      ctx.strokeStyle = `rgba(160,236,255,${0.15 * p1.z})`;
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    }
+  }
+  for (let k = 1; k < 6; k++) {
+    const lat = -Math.PI / 2 + k / 6 * Math.PI;
+    for (let i = 0; i < 80; i++) {
+      const p1 = project(lat, i / 80 * Math.PI * 2, spin);
+      const p2 = project(lat, (i + 1) / 80 * Math.PI * 2, spin);
+      if (p1.z <= 0) continue;
+      ctx.strokeStyle = `rgba(160,236,255,${0.15 * p1.z})`;
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    }
+  }
+
+  // Land dots and scan line
+  const scanY = CY - R + ((t * 0.25) % 1) * R * 2;
+  for (const p of globePts) {
+    const q = project(p.lat, p.lon, spin);
+    if (q.z <= 0) continue;
+    const near = Math.max(0, 1 - Math.abs(q.y - scanY) / (R * 0.08));
+    if (p.hot) {
+      ctx.fillStyle = `rgba(${HIGHLIGHT_COLOR},${0.6 + 0.4 * q.z})`;
+      ctx.fillRect(q.x - 1.2, q.y - 1.2, 2.4, 2.4);
+    } else if (p.land) {
+      // All land lit: colored by terrain, brighter as the scan line passes
+      const c = TERRAIN_COLORS[p.kind];
+      const mix = v => Math.round(v + (255 - v) * near * 0.7);
+      ctx.fillStyle = `rgba(${mix(c[0])},${mix(c[1])},${mix(c[2])},${0.62 + 0.3 * q.z})`;
+      ctx.fillRect(q.x - 1.3, q.y - 1.3, 2.6, 2.6);
+    } else if (p.kind === 1) {
+      // Shallow coastal ocean: brighter blue
+      const c = TERRAIN_COLORS[1];
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.75 * q.z})`;
+      ctx.fillRect(q.x - 0.9, q.y - 0.9, 1.8, 1.8);
+    } else {
+      const c = TERRAIN_COLORS[0];
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${0.3 * q.z})`;
+      ctx.fillRect(q.x - 0.5, q.y - 0.5, 1, 1);
+    }
+  }
+
+  // Bright rim
+  ctx.strokeStyle = "rgba(160,240,255,0.65)";
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(CX, CY, R, 0, Math.PI * 2); ctx.stroke();
+
+  drawHighlights(t, spin);
+
+  ORBITS.forEach(o => drawOrbit(o, t, true));
+
+  if (!reduceMotion) requestAnimationFrame(frame);
+}
+
+function build() { resize(); buildTicker(); if (reduceMotion) frame(0); }
+
+let timer;
+window.addEventListener("resize", () => { clearTimeout(timer); timer = setTimeout(build, 250); });
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
+  build();
+  if (!reduceMotion) requestAnimationFrame(frame);
+});
+</script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
